@@ -203,25 +203,25 @@ server {
 ## Screenshots
 
 ### Home Page
-![Home](static/images/screenshots/home.png)
+![Home](static/css/jss/images/screenshots/home.png)
 
 ### Login Page
-![Login](static/images/screenshots/login.png)
+![Login](static/css/jss/images/screenshots/login.png)
 
 ### Patient Dashboard
-![Dashboard](static/images/screenshots/dashboard.png)
+![Dashboard](static/css/jss/images/screenshots/dashboard.png)
 
 ### Book Appointment
-![Book](static/images/screenshots/book.png)
+![Book](static/css/jss/images/screenshots/book.png)
 
 ### Doctor Dashboard
-![Doctor](static/images/screenshots/doctor.png)
+![Doctor](static/css/jss/images/screenshots/doctor.png)
 
 ### Admin Dashboard
-![Admin](static/images/screenshots/admin.png)
+![Admin](static/css/jss/images/screenshots/admin.png)
 
 ### Billing
-![Billing](static/images/screenshots/billing.png)
+![Billing](static/css/jss/images/screenshots/billing.png)
 
 ---
 
