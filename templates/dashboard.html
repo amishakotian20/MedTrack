@@ -1,0 +1,134 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+
+{% block extra_head %}
+<style>
+  .db-header {
+    background: linear-gradient(135deg, var(--dark) 0%, var(--mid) 100%);
+    padding: 2.5rem 2.5rem 3.5rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .db-header::after {
+    content: '';
+    position: absolute; bottom: -2px; left: 0; right: 0;
+    height: 40px;
+    background: var(--bg);
+    border-radius: 40px 40px 0 0;
+  }
+  .db-greeting { font-family: 'Sora', sans-serif; font-size: 1.8rem; font-weight: 800; color: #fff; }
+  .db-greeting span { color: var(--teal-lt); }
+  .db-date { color: rgba(255,255,255,.5); font-size: .9rem; margin-top: .3rem; }
+
+  .db-actions { display: flex; gap: 1rem; margin: 2rem 0 1.5rem; flex-wrap: wrap; }
+  .action-btn {
+    background: var(--card);
+    border-radius: 14px;
+    padding: 1.3rem 1.6rem;
+    display: flex; align-items: center; gap: .9rem;
+    text-decoration: none;
+    color: var(--dark);
+    box-shadow: var(--shadow);
+    transition: all .2s;
+    flex: 1; min-width: 160px;
+  }
+  .action-btn:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(0,18,25,.14); }
+  .action-icon { font-size: 1.7rem; }
+  .action-label { font-family: 'Sora', sans-serif; font-weight: 700; font-size: .9rem; color: var(--dark); }
+  .action-sub { font-size: .78rem; color: var(--muted); }
+
+  .section-label {
+    font-family: 'Sora', sans-serif;
+    font-size: .78rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--muted);
+    margin-bottom: 1rem;
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 3rem 2rem;
+    color: var(--muted);
+  }
+  .empty-state .em-icon { font-size: 3rem; margin-bottom: 1rem; }
+  .empty-state p { font-size: .95rem; margin-bottom: 1.5rem; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="db-header">
+  <div class="page-wrap" style="padding-bottom:0">
+    <div class="db-greeting">Hello, <span>{{ session.patient_name }}</span> 👋</div>
+    <div class="db-date">Your Health Dashboard</div>
+  </div>
+</div>
+
+<div class="page-wrap" style="padding-top: 1.5rem;">
+
+  <!-- Quick Actions -->
+  <div class="section-label">Quick Actions</div>
+  <div class="db-actions">
+    <a href="{{ url_for('book_appointment') }}" class="action-btn">
+      <span class="action-icon">📅</span>
+      <div>
+        <div class="action-label">Book Appointment</div>
+        <div class="action-sub">Schedule a visit</div>
+      </div>
+    </a>
+    <a href="{{ url_for('medical_history') }}" class="action-btn">
+      <span class="action-icon">📋</span>
+      <div>
+        <div class="action-label">Medical History</div>
+        <div class="action-sub">View all records</div>
+      </div>
+    </a>
+  </div>
+
+  <!-- Appointments Table -->
+  <div class="section-label" style="margin-top:2rem">Recent Appointments</div>
+  <div class="card" style="padding:0; overflow:hidden;">
+    {% if appointments %}
+      <table>
+        <thead>
+          <tr>
+            <th>Doctor</th>
+            <th>Date</th>
+            <th>Status</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for appt in appointments %}
+          <tr>
+            <td><strong>{{ appt.Doctor }}</strong></td>
+            <td>{{ appt.Date }}</td>
+            <td>
+              <span class="badge badge-{{ appt.Status | lower }}">{{ appt.Status }}</span>
+            </td>
+            <td>
+              {% if appt.Status == 'Pending' %}
+              <form method="POST" action="{{ url_for('cancel_appointment', appointment_id=appt.AppointmentID) }}" style="display:inline">
+                <button type="submit" class="btn btn-danger"
+                  onclick="return confirm('Cancel this appointment?')">Cancel</button>
+              </form>
+              {% else %}
+              <span style="color:var(--muted);font-size:.85rem">—</span>
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <div class="empty-state">
+        <div class="em-icon">📭</div>
+        <p>No appointments yet. Book your first one now!</p>
+        <a href="{{ url_for('book_appointment') }}" class="btn btn-primary">Book Appointment</a>
+      </div>
+    {% endif %}
+  </div>
+
+</div>
+{% endblock %}

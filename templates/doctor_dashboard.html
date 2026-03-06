@@ -1,0 +1,162 @@
+{% extends "base.html" %}
+{% block title %}Doctor Dashboard{% endblock %}
+
+{% block extra_head %}
+<style>
+  .db-header {
+    background: linear-gradient(135deg, #0a3d47 0%, #0a9396 100%);
+    padding: 2.5rem 2.5rem 3.5rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .db-header::after {
+    content: '';
+    position: absolute; bottom: -2px; left: 0; right: 0;
+    height: 40px;
+    background: var(--bg);
+    border-radius: 40px 40px 0 0;
+  }
+  .db-greeting { font-family: 'Sora', sans-serif; font-size: 1.8rem; font-weight: 800; color: #fff; }
+  .db-greeting span { color: var(--teal-lt); }
+  .db-sub { color: rgba(255,255,255,.5); font-size: .9rem; margin-top: .3rem; }
+
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+  .stat-card {
+    background: var(--card);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 1.3rem 1.5rem;
+    display: flex; align-items: center; gap: 1rem;
+  }
+  .stat-icon { font-size: 1.8rem; }
+  .stat-num { font-family: 'Sora', sans-serif; font-size: 1.5rem; font-weight: 800; color: var(--dark); line-height: 1; }
+  .stat-label { font-size: .78rem; color: var(--muted); margin-top: .2rem; }
+
+  .section-label {
+    font-family: 'Sora', sans-serif;
+    font-size: .78rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--muted);
+    margin-bottom: 1rem;
+  }
+
+  .empty-state { text-align: center; padding: 3rem 2rem; color: var(--muted); }
+  .empty-state .em-icon { font-size: 3rem; margin-bottom: 1rem; }
+
+  select.status-select {
+    padding: .3rem .6rem;
+    border-radius: 8px;
+    font-size: .82rem;
+    border: 1.5px solid #d4e0dc;
+    background: #f8faf9;
+    color: var(--dark);
+    cursor: pointer;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="db-header">
+  <div class="page-wrap" style="padding-bottom:0">
+    <div class="db-greeting">👨‍⚕️ Dr. <span>{{ session.user_name }}</span></div>
+    <div class="db-sub">Doctor Dashboard — Manage your appointments</div>
+  </div>
+</div>
+
+<div class="page-wrap" style="padding-top:1.5rem;">
+
+  <!-- Stats -->
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="stat-icon">📅</div>
+      <div>
+        <div class="stat-num">{{ appointments | length }}</div>
+        <div class="stat-label">Total Appointments</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">⏳</div>
+      <div>
+        <div class="stat-num">{{ appointments | selectattr('Status', 'equalto', 'Pending') | list | length }}</div>
+        <div class="stat-label">Pending</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">✅</div>
+      <div>
+        <div class="stat-num">{{ appointments | selectattr('Status', 'equalto', 'Confirmed') | list | length }}</div>
+        <div class="stat-label">Confirmed</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">🏁</div>
+      <div>
+        <div class="stat-num">{{ appointments | selectattr('Status', 'equalto', 'Completed') | list | length }}</div>
+        <div class="stat-label">Completed</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Nav to Lab Reports -->
+  <div style="margin-bottom:1.5rem;">
+    <a href="{{ url_for('doctor_lab_reports') }}" class="btn btn-outline">🧪 View All Lab Reports</a>
+  </div>
+
+  <!-- Appointments Table -->
+  <div class="section-label">Patient Appointments</div>
+  <div class="card" style="padding:0; overflow:hidden;">
+    {% if appointments %}
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Patient</th>
+          <th>Date</th>
+          <th>Slot</th>
+          <th>Status</th>
+          <th>Update</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for appt in appointments %}
+        <tr>
+          <td style="color:var(--muted)">{{ loop.index }}</td>
+          <td><strong>{{ appt.PatientName }}</strong></td>
+          <td>{{ appt.Date }}</td>
+          <td>{{ appt.get('Slot', '—') }}</td>
+          <td><span class="badge badge-{{ appt.Status | lower }}">{{ appt.Status }}</span></td>
+          <td>
+            {% if appt.Status != 'Completed' and appt.Status != 'Cancelled' %}
+            <form method="POST" action="{{ url_for('update_appointment', appointment_id=appt.AppointmentID) }}" style="display:flex; gap:.5rem;">
+              <select name="status" class="status-select">
+                <option value="Confirmed">Confirmed</option>
+                <option value="Completed">Completed</option>
+                <option value="Cancelled">Cancelled</option>
+              </select>
+              <button type="submit" class="btn btn-primary" style="padding:.3rem .8rem;font-size:.8rem;">Update</button>
+            </form>
+            {% else %}
+            <span style="color:var(--muted);font-size:.85rem">—</span>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <div class="empty-state">
+      <div class="em-icon">📭</div>
+      <p>No appointments assigned yet.</p>
+    </div>
+    {% endif %}
+  </div>
+
+</div>
+{% endblock %}

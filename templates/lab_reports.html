@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+{% block title %}Lab Reports{% endblock %}
+
+{% block extra_head %}
+<style>
+  .page-title { font-family: 'Sora', sans-serif; font-size: 1.8rem; font-weight: 800; color: var(--dark); margin-bottom: .4rem; }
+  .page-sub { color: var(--muted); margin-bottom: 2rem; font-size: .95rem; }
+
+  .lab-layout { display: grid; grid-template-columns: 1fr 1.6fr; gap: 2rem; align-items: start; }
+
+  .form-card {
+    background: var(--card);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 1.8rem;
+    position: sticky;
+    top: 80px;
+  }
+  .form-card-title {
+    font-family: 'Sora', sans-serif;
+    font-weight: 700;
+    font-size: 1rem;
+    color: var(--dark);
+    margin-bottom: 1.4rem;
+    padding-bottom: .8rem;
+    border-bottom: 2px solid var(--bg);
+  }
+
+  .section-label {
+    font-family: 'Sora', sans-serif;
+    font-size: .78rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--muted);
+    margin-bottom: 1rem;
+  }
+
+  .report-card {
+    background: var(--card);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 1.4rem 1.6rem;
+    margin-bottom: 1rem;
+    border-left: 4px solid var(--teal);
+    transition: transform .2s;
+  }
+  .report-card:hover { transform: translateX(4px); }
+  .report-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: .6rem; }
+  .report-name { font-family: 'Sora', sans-serif; font-weight: 700; font-size: 1rem; color: var(--dark); }
+  .report-date { font-size: .82rem; color: var(--muted); }
+  .report-result { font-size: .92rem; color: var(--mid); margin-bottom: .4rem; }
+  .report-result span { font-weight: 700; color: var(--teal-dk); }
+  .report-notes { font-size: .85rem; color: var(--muted); font-style: italic; }
+
+  .empty-state { text-align: center; padding: 3rem 2rem; color: var(--muted); }
+  .empty-state .em-icon { font-size: 3rem; margin-bottom: 1rem; }
+
+  .btn-full { width: 100%; text-align: center; padding: .85rem; font-size: .95rem; }
+
+  @media (max-width: 768px) {
+    .lab-layout { grid-template-columns: 1fr; }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-wrap">
+  <div class="page-title">🧪 Lab Reports</div>
+  <div class="page-sub">Submit and view your laboratory test results.</div>
+
+  <div class="lab-layout">
+
+    <!-- Submit Form -->
+    <div class="form-card">
+      <div class="form-card-title">➕ Submit New Report</div>
+      <form method="POST">
+        <div class="form-group">
+          <label>Test Name *</label>
+          <input type="text" name="test_name" placeholder="e.g. Blood Sugar, CBC" required>
+        </div>
+        <div class="form-group">
+          <label>Result *</label>
+          <input type="text" name="result" placeholder="e.g. Normal, 120 mg/dL" required>
+        </div>
+        <div class="form-group">
+          <label>Test Date *</label>
+          <input type="date" name="date" required>
+        </div>
+        <div class="form-group">
+          <label>Notes (optional)</label>
+          <textarea name="notes" rows="3" placeholder="Any additional notes..."></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary btn-full">Submit Report →</button>
+      </form>
+    </div>
+
+    <!-- Reports List -->
+    <div class="reports-section">
+      <div class="section-label">Your Reports ({{ reports | length }})</div>
+
+      {% if reports %}
+        {% for rep in reports %}
+        <div class="report-card">
+          <div class="report-top">
+            <div class="report-name">🧬 {{ rep.TestName }}</div>
+            <div class="report-date">📅 {{ rep.Date }}</div>
+          </div>
+          <div class="report-result">Result: <span>{{ rep.Result }}</span></div>
+          {% if rep.Notes %}
+          <div class="report-notes">📝 {{ rep.Notes }}</div>
+          {% endif %}
+        </div>
+        {% endfor %}
+      {% else %}
+        <div class="empty-state">
+          <div class="em-icon">🧪</div>
+          <p>No lab reports submitted yet.</p>
+        </div>
+      {% endif %}
+    </div>
+
+  </div>
+</div>
+{% endblock %}

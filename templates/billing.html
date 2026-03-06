@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+{% block title %}Billing{% endblock %}
+
+{% block extra_head %}
+<style>
+  .page-title { font-family: 'Sora', sans-serif; font-size: 1.8rem; font-weight: 800; color: var(--dark); margin-bottom: .4rem; }
+  .page-sub { color: var(--muted); margin-bottom: 2rem; font-size: .95rem; }
+
+  .summary-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.2rem;
+    margin-bottom: 2rem;
+  }
+  .summary-card {
+    background: var(--card);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 1.4rem 1.6rem;
+    display: flex; align-items: center; gap: 1rem;
+  }
+  .summary-icon { font-size: 2rem; }
+  .summary-num { font-family: 'Sora', sans-serif; font-size: 1.6rem; font-weight: 800; color: var(--dark); line-height: 1; }
+  .summary-label { font-size: .8rem; color: var(--muted); margin-top: .2rem; }
+
+  .empty-state { text-align: center; padding: 3rem 2rem; color: var(--muted); }
+  .empty-state .em-icon { font-size: 3rem; margin-bottom: 1rem; }
+
+  @media (max-width: 768px) {
+    .summary-row { grid-template-columns: 1fr; }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-wrap">
+  <div class="page-title">💳 Billing & Payments</div>
+  <div class="page-sub">View and pay your consultation bills.</div>
+
+  <!-- Summary -->
+  {% if bills %}
+  <div class="summary-row">
+    <div class="summary-card">
+      <div class="summary-icon">🧾</div>
+      <div>
+        <div class="summary-num">{{ bills | length }}</div>
+        <div class="summary-label">Total Bills</div>
+      </div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-icon">✅</div>
+      <div>
+        <div class="summary-num">{{ bills | selectattr('PaymentStatus', 'equalto', 'Paid') | list | length }}</div>
+        <div class="summary-label">Paid</div>
+      </div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-icon">⏳</div>
+      <div>
+        <div class="summary-num">{{ bills | selectattr('PaymentStatus', 'equalto', 'Unpaid') | list | length }}</div>
+        <div class="summary-label">Unpaid</div>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Bills Table -->
+  <div class="card" style="padding:0; overflow:hidden;">
+    {% if bills %}
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Doctor</th>
+          <th>Date</th>
+          <th>Amount</th>
+          <th>Status</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for bill in bills %}
+        <tr>
+          <td style="color:var(--muted)">{{ loop.index }}</td>
+          <td><strong>{{ bill.Doctor }}</strong></td>
+          <td>{{ bill.Date }}</td>
+          <td><strong style="color:var(--teal-dk)">₹{{ bill.Amount }}</strong></td>
+          <td>
+            <span class="badge badge-{{ bill.PaymentStatus | lower }}">{{ bill.PaymentStatus }}</span>
+          </td>
+          <td>
+            {% if bill.PaymentStatus == 'Unpaid' %}
+            <form method="POST" action="{{ url_for('pay_bill', bill_id=bill.BillID) }}" style="display:inline">
+              <button type="submit" class="btn btn-success"
+                onclick="return confirm('Confirm payment of ₹{{ bill.Amount }}?')">Pay Now</button>
+            </form>
+            {% else %}
+            <span style="color:var(--muted);font-size:.85rem">— Paid —</span>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <div class="empty-state">
+      <div class="em-icon">💳</div>
+      <p>No bills yet. Bills are generated automatically when you book an appointment.</p>
+      <a href="{{ url_for('book_appointment') }}" class="btn btn-primary" style="margin-top:1rem;display:inline-block;">Book Appointment</a>
+    </div>
+    {% endif %}
+  </div>
+
+</div>
+{% endblock %}

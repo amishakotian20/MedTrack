@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% block title %}Patient Lab Reports{% endblock %}
+
+{% block extra_head %}
+<style>
+  .page-title { font-family: 'Sora', sans-serif; font-size: 1.8rem; font-weight: 800; color: var(--dark); margin-bottom: .4rem; }
+  .page-sub { color: var(--muted); margin-bottom: 2rem; font-size: .95rem; }
+
+  .reports-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 1.2rem;
+  }
+  .report-card {
+    background: var(--card);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 1.4rem 1.6rem;
+    border-left: 4px solid var(--teal);
+    transition: transform .2s;
+  }
+  .report-card:hover { transform: translateY(-3px); }
+  .report-top {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    margin-bottom: .7rem;
+  }
+  .report-test { font-family: 'Sora', sans-serif; font-weight: 700; font-size: 1rem; color: var(--dark); }
+  .report-date { font-size: .8rem; color: var(--muted); }
+  .report-patient {
+    display: inline-block;
+    background: rgba(10,147,150,.1);
+    color: var(--teal-dk);
+    border-radius: 20px;
+    padding: .2rem .7rem;
+    font-size: .78rem;
+    font-weight: 700;
+    margin-bottom: .7rem;
+  }
+  .report-result { font-size: .92rem; color: var(--mid); margin-bottom: .4rem; }
+  .report-result span { font-weight: 700; color: var(--teal-dk); }
+  .report-notes { font-size: .85rem; color: var(--muted); font-style: italic; }
+
+  .empty-state { text-align: center; padding: 3rem 2rem; color: var(--muted); }
+  .empty-state .em-icon { font-size: 3rem; margin-bottom: 1rem; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-wrap">
+  <div class="page-title">🧪 Patient Lab Reports</div>
+  <div class="page-sub">All lab reports submitted by patients.</div>
+
+  <div style="margin-bottom:1.5rem;">
+    <a href="{{ url_for('doctor_dashboard') }}" class="btn btn-outline">← Back to Dashboard</a>
+  </div>
+
+  {% if reports %}
+  <div class="reports-grid">
+    {% for rep in reports %}
+    <div class="report-card">
+      <div class="report-top">
+        <div class="report-test">🧬 {{ rep.TestName }}</div>
+        <div class="report-date">📅 {{ rep.Date }}</div>
+      </div>
+      <div class="report-patient">👤 {{ rep.PatientName }}</div>
+      <div class="report-result">Result: <span>{{ rep.Result }}</span></div>
+      {% if rep.Notes %}
+      <div class="report-notes">📝 {{ rep.Notes }}</div>
+      {% endif %}
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="empty-state">
+    <div class="em-icon">🧪</div>
+    <p>No lab reports submitted by patients yet.</p>
+  </div>
+  {% endif %}
+
+</div>
+{% endblock %}

@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}Medical History{% endblock %}
+
+{% block content %}
+<div class="page-wrap">
+  <h1 style="font-family:'Sora',sans-serif;font-size:1.8rem;font-weight:800;color:var(--dark);margin-bottom:.4rem;">📋 Medical History</h1>
+  <p style="color:var(--muted);margin-bottom:2rem;">All your appointments and their current status.</p>
+
+  <div class="card" style="padding:0;overflow:hidden;">
+    {% if records %}
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Appointment ID</th>
+          <th>Doctor</th>
+          <th>Date</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for rec in records %}
+        <tr>
+          <td style="color:var(--muted)">{{ loop.index }}</td>
+          <td style="font-size:.78rem;font-family:monospace;color:var(--muted)">{{ rec.AppointmentID[:8] }}…</td>
+          <td><strong>{{ rec.Doctor }}</strong></td>
+          <td>{{ rec.Date }}</td>
+          <td><span class="badge badge-{{ rec.Status | lower }}">{{ rec.Status }}</span></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <div style="text-align:center;padding:3rem 2rem;color:var(--muted);">
+      <div style="font-size:3rem;margin-bottom:1rem;">📭</div>
+      <p>No medical records found.</p>
+      <a href="{{ url_for('book_appointment') }}" class="btn btn-primary" style="margin-top:1rem;display:inline-block;">Book Your First Appointment</a>
+    </div>
+    {% endif %}
+  </div>
+
+  <div style="margin-top:1.5rem;">
+    <a href="{{ url_for('dashboard') }}" style="color:var(--muted);font-size:.9rem;text-decoration:none;">← Back to Dashboard</a>
+  </div>
+</div>
+{% endblock %}

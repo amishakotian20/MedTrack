@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+{% block title %}Login{% endblock %}
+
+{% block extra_head %}
+<style>
+  .auth-wrap {
+    min-height: calc(100vh - 64px);
+    display: flex; align-items: center; justify-content: center;
+    padding: 3rem 1.5rem;
+    background: linear-gradient(135deg, #e8f4f5 0%, var(--bg) 100%);
+  }
+  .auth-card {
+    background: var(--card);
+    border-radius: 20px;
+    box-shadow: 0 8px 40px rgba(0,18,25,.12);
+    padding: 2.8rem;
+    width: 100%; max-width: 440px;
+  }
+  .auth-logo { font-family: 'Sora', sans-serif; font-size: 1.5rem; font-weight: 800; color: var(--teal-dk); text-align: center; margin-bottom: .4rem; }
+  .auth-logo span { color: var(--coral); }
+  .auth-sub { text-align: center; color: var(--muted); font-size: .9rem; margin-bottom: 2rem; }
+
+  .role-selector {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: .6rem;
+    margin-bottom: 1.8rem;
+  }
+  .role-btn {
+    border: 2px solid #e0ebe7;
+    border-radius: 12px;
+    padding: .9rem .5rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all .2s;
+    background: #f8faf9;
+  }
+  .role-btn:hover { border-color: var(--teal); background: rgba(10,147,150,.04); }
+  .role-btn.active { border-color: var(--teal); background: rgba(10,147,150,.1); }
+  .role-btn input[type=radio] { display: none; }
+  .role-icon { font-size: 1.5rem; display: block; margin-bottom: .3rem; }
+  .role-label { font-family: 'Sora', sans-serif; font-weight: 700; font-size: .8rem; color: var(--dark); }
+
+  .auth-footer { text-align: center; margin-top: 1.5rem; font-size: .9rem; color: var(--muted); }
+  .auth-footer a { color: var(--teal); font-weight: 600; text-decoration: none; }
+  .btn-full { width: 100%; text-align: center; padding: .85rem; font-size: 1rem; }
+</style>
+<script>
+  function selectRole(btn, value) {
+    document.querySelectorAll('.role-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('role').value = value;
+  }
+</script>
+{% endblock %}
+
+{% block content %}
+<div class="auth-wrap">
+  <div class="auth-card">
+    <div class="auth-logo">Med<span>Track</span></div>
+    <div class="auth-sub">Sign in to your account</div>
+
+    <form method="POST">
+      <input type="hidden" name="role" id="role" value="patient">
+
+      <!-- Role Selector -->
+      <div class="role-selector">
+        <div class="role-btn active" onclick="selectRole(this, 'patient')">
+          <input type="radio" name="role_radio" value="patient">
+          <span class="role-icon">🧑‍⚕️</span>
+          <span class="role-label">Patient</span>
+        </div>
+        <div class="role-btn" onclick="selectRole(this, 'doctor')">
+          <input type="radio" name="role_radio" value="doctor">
+          <span class="role-icon">👨‍⚕️</span>
+          <span class="role-label">Doctor</span>
+        </div>
+        <div class="role-btn" onclick="selectRole(this, 'admin')">
+          <input type="radio" name="role_radio" value="admin">
+          <span class="role-icon">🛡️</span>
+          <span class="role-label">Admin</span>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Email Address</label>
+        <input type="email" name="email" placeholder="you@example.com" required>
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" name="password" placeholder="Your password" required>
+      </div>
+      <button type="submit" class="btn btn-primary btn-full">Sign In →</button>
+    </form>
+
+    <div class="auth-footer">
+      New patient? <a href="{{ url_for('register') }}">Create an account</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

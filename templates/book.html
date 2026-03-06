@@ -1,0 +1,140 @@
+{% extends "base.html" %}
+{% block title %}Book Appointment{% endblock %}
+
+{% block extra_head %}
+<style>
+  .book-wrap { max-width: 680px; margin: 0 auto; }
+  .page-title { font-family: 'Sora', sans-serif; font-size: 1.8rem; font-weight: 800; color: var(--dark); margin-bottom: .4rem; }
+  .page-sub { color: var(--muted); margin-bottom: 2rem; font-size: .95rem; }
+
+  .doctor-grid { display: grid; grid-template-columns: 1fr 1fr; gap: .8rem; margin-bottom: 1.5rem; }
+  .doctor-card {
+    border: 2px solid #e0ebe7;
+    border-radius: 12px;
+    padding: 1rem 1.1rem;
+    cursor: pointer;
+    transition: all .2s;
+    position: relative;
+  }
+  .doctor-card:hover { border-color: var(--teal); background: rgba(10,147,150,.04); }
+  .doctor-card input[type=radio] { position: absolute; opacity: 0; }
+  .doctor-card.selected { border-color: var(--teal); background: rgba(10,147,150,.08); }
+  .doc-name { font-family: 'Sora', sans-serif; font-weight: 700; font-size: .92rem; color: var(--dark); }
+  .doc-spec { font-size: .8rem; color: var(--muted); margin-top: .15rem; }
+  .doc-fee-tag { font-size: .78rem; font-weight: 700; color: var(--teal-dk); margin-top: .3rem; }
+
+  .slots-grid { display: flex; flex-wrap: wrap; gap: .6rem; margin-top: .5rem; }
+  .slot-btn {
+    background: #f0f7f6;
+    border: 2px solid #d4e0dc;
+    border-radius: 8px;
+    padding: .4rem .9rem;
+    font-size: .85rem;
+    font-weight: 600;
+    color: var(--mid);
+    cursor: pointer;
+    transition: all .2s;
+  }
+  .slot-btn:hover { border-color: var(--teal); background: rgba(10,147,150,.08); }
+  .slot-btn.selected { border-color: var(--teal); background: var(--teal); color: #fff; }
+
+  .btn-full { width: 100%; text-align: center; padding: .9rem; font-size: 1rem; margin-top: .5rem; }
+
+  .info-box {
+    background: rgba(10,147,150,.07);
+    border: 1px solid rgba(10,147,150,.2);
+    border-radius: 10px;
+    padding: 1rem 1.2rem;
+    font-size: .88rem;
+    color: var(--teal-dk);
+    margin-bottom: 1.5rem;
+  }
+</style>
+
+<script>
+  const doctorData = JSON.parse('{{ doctors | tojson | safe }}');
+
+  function selectDoctor(card, docName, fee) {
+    document.querySelectorAll('.doctor-card').forEach(c => c.classList.remove('selected'));
+    card.classList.add('selected');
+    document.getElementById('selected_doctor').value = docName;
+    document.getElementById('selected_fee').value = fee;
+
+    // Load slots
+    const doc = doctorData.find(d => d.name === docName);
+    const slotsWrap = document.getElementById('slots-wrap');
+    slotsWrap.innerHTML = '';
+    document.getElementById('selected_slot').value = '';
+
+    if (doc) {
+      doc.slots.forEach(slot => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'slot-btn';
+        btn.textContent = slot;
+        btn.onclick = () => selectSlot(btn, slot);
+        slotsWrap.appendChild(btn);
+      });
+      document.getElementById('slot-section').style.display = 'block';
+    }
+  }
+
+  function selectSlot(btn, slot) {
+    document.querySelectorAll('.slot-btn').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+    document.getElementById('selected_slot').value = slot;
+  }
+</script>
+{% endblock %}
+
+{% block content %}
+<div class="page-wrap">
+  <div class="book-wrap">
+    <div class="page-title">📅 Book an Appointment</div>
+    <div class="page-sub">Select a doctor, pick a time slot, and choose your date.</div>
+
+    <div class="info-box">
+      💡 A bill will be automatically generated after booking. You can pay from the <strong>Billing</strong> section.
+    </div>
+
+    <form method="POST">
+      <input type="hidden" name="doctor" id="selected_doctor">
+      <input type="hidden" name="slot"   id="selected_slot">
+      <input type="hidden" name="fee"    id="selected_fee">
+
+      <!-- Doctor Selection -->
+      <div class="form-group">
+        <label>Select Doctor</label>
+        <div class="doctor-grid">
+          {% for doc in doctors %}
+          <div class="doctor-card" onclick="selectDoctor(this, '{{ doc.name }}', '{{ doc.fee }}')">
+            <input type="radio" name="doctor_radio" value="{{ doc.name }}">
+            <div class="doc-name">{{ doc.name }}</div>
+            <div class="doc-spec">{{ doc.specialty }}</div>
+            <div class="doc-fee-tag">₹{{ doc.fee }} consultation</div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+
+      <!-- Slot Selection -->
+      <div class="form-group" id="slot-section" style="display:none;">
+        <label>Select Time Slot</label>
+        <div class="slots-grid" id="slots-wrap"></div>
+      </div>
+
+      <!-- Date -->
+      <div class="form-group">
+        <label>Preferred Date</label>
+        <input type="date" name="date" required>
+      </div>
+
+      <button type="submit" class="btn btn-primary btn-full">Confirm Appointment →</button>
+    </form>
+
+    <div style="text-align:center; margin-top:1.2rem;">
+      <a href="{{ url_for('dashboard') }}" style="color:var(--muted);font-size:.9rem;text-decoration:none;">← Back to Dashboard</a>
+    </div>
+  </div>
+</div>
+{% endblock %}
