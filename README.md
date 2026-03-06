@@ -200,8 +200,28 @@ server {
 ---
 
 ## Screenshots
+## Screenshots
 
-> Add screenshots of your running application here
+### Home Page
+![Home](static/images/screenshots/home.png)
+
+### Login Page
+![Login](static/images/screenshots/login.png)
+
+### Patient Dashboard
+![Dashboard](static/images/screenshots/dashboard.png)
+
+### Book Appointment
+![Book](static/images/screenshots/book.png)
+
+### Doctor Dashboard
+![Doctor](static/images/screenshots/doctor.png)
+
+### Admin Dashboard
+![Admin](static/images/screenshots/admin.png)
+
+### Billing
+![Billing](static/images/screenshots/billing.png)
 
 ---
 
