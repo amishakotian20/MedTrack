@@ -235,7 +235,7 @@ server {
 | Malavika Gireesh | Member |
 | Ainam Mansia | Member |
 
-> Note: Project implemented by Amisha A Kotian
+
 ## License
 
 This project was built as part of an AWS Cloud internship program.
