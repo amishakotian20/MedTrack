@@ -8,11 +8,8 @@ from functools import wraps
 
 app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY', 'medtrack-secret-key-2024')
-AWS_REGION = os.environ.get('AWS_REGION', 'us-east-1')
-
-# ─── SNS TOPIC ARN ─────────────────────────────────────────
-SNS_TOPIC_ARN = 'arn:aws:sns:us-east-1:746669240044:MedTrack_SNS'
-
+AWS_REGION = os.environ.get('AWS_REGION', 'ap-south-1')
+SNS_TOPIC_ARN = 'arn:aws:sns:ap-south-1:254652354090:MedTrack_SNS'
 # ─── ADMIN CREDENTIALS ─────────────────────────────────────
 ADMIN_EMAIL    = 'admin@medtrack.com'
 ADMIN_PASSWORD = 'admin123'
